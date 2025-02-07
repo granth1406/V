@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dear V</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #F3E5F5, #E1F5FE);
+            font-family: 'Playfair Display', serif;
+            min-height: 100vh;
+            color: #37474F;
+        }
+        nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        nav button {
+            transition: all 0.3s ease;
+            color: #673AB7;
+            font-weight: 500;
+            margin: 0 15px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        nav button:hover {
+            transform: scale(1.05);
+            background: rgba(103, 58, 183, 0.05);
+            color: #4527A0;
+        }
+        .heart-animation {
+            animation: subtle-pulse 2s infinite;
+            text-shadow: 0 0 20px rgba(103,58,183,0.2);
+        }
+        @keyframes subtle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .page {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            background: rgba(255,255,255,0.7);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-top: 100px;
+            padding: 40px;
+        }
+        .active-page {
+            display: block;
+            opacity: 1;
+        }
+        .journal-entry {
+            background: rgba(236, 229, 247, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+        }
+        .journal-entry:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+        input, textarea, select {
+            border: 2px solid #9C27B0;
+            border-radius: 15px;
+            transition: all 0.4s ease;
+            background: rgba(255,255,255,0.7);
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #673AB7;
+            box-shadow: 0 0 15px rgba(103,58,183,0.2);
+        }
+        .elegant-button {
+            background: linear-gradient(135deg, #673AB7, #9C27B0);
+            color: white;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 15px rgba(103,58,183,0.3);
+        }
+        .elegant-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(103,58,183,0.4);
+        }
+    </style>
+</head>
+<body>
+    <nav class="fixed top-0 left-0 right-0 p-4 flex justify-center z-50">
+        <button onclick="showPage('landing')">Home</button>
+        <button onclick="showPage('literature')">Literature</button>
+        <button onclick="showPage('timeline')">Timeline</button>
+        <button onclick="showPage('thoughts')">Our Journal</button>
+    </nav>
+
+    <div id="landing" class="page active-page container mx-auto text-center p-10">
+        <h1 class="text-5xl text-purple-700 mb-6 font-bold">I still love you my Sleeping Beauty</h1>
+        <div class="heart-animation text-6xl mb-6">❤️</div>
+        <p class="mt-4 text-2xl text-purple-600">This is a digital memoir of our time together</p>
+    </div>
+
+    <div id="literature" class="page container mx-auto text-center p-10">
+        <h2 class="text-4xl mb-6 text-purple-700">Our Love Story</h2>
+        <div class="max-w-2xl mx-auto bg-white bg-opacity-70 p-8 rounded-xl shadow-lg">
+            <p id="storyText" class="text-xl text-purple-900 italic"></p>
+        </div>
+        <button onclick="generateRandomLoveLetter()" class="mt-6 elegant-button p-4 rounded-full">Next <3</button>
+    </div>
+
+    <div id="timeline" class="page container mx-auto p-10">
+        <h2 class="text-4xl text-center mb-6 text-purple-700">Our Journey Together</h2>
+        <div id="timelineEvents" class="space-y-4 max-w-xl mx-auto"></div>
+    </div>
+
+    <div id="thoughts" class="page container mx-auto p-10">
+        <h2 class="text-4xl text-center mb-6 text-purple-700">Our Shared Journal</h2>
+        <div class="max-w-2xl mx-auto">
+            <div class="flex space-x-4 mb-6">
+                <input type="text" id="entryTitle" class="w-1/2 p-3 border" placeholder="Entry Title">
+                <select id="entryMood" class="w-1/2 p-3 border">
+                    <option value="">Select Mood</option>
+                    <option value="happy">Happy 😊</option>
+                    <option value="romantic">Romantic 💕</option>
+                    <option value="reflective">Reflective 🤔</option>
+                    <option value="excited">Excited 🎉</option>
+                </select>
+            </div>
+            <textarea id="thoughtInput" class="w-full h-40 p-4 border" placeholder="Write your journal entry..."></textarea>
+            <button onclick="saveJournalEntry()" class="mt-4 w-full elegant-button p-4 rounded-full">Save Entry</button>
+            
+            <div id="journalEntries" class="mt-6 space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const pages = ['landing', 'literature', 'timeline', 'thoughts'];
+        
+        function showPage(pageId) {
+            pages.forEach(page => {
+                document.getElementById(page).classList.remove('active-page');
+            });
+            document.getElementById(pageId).classList.add('active-page');
+        }
+
+        function generateRandomLoveLetter() {
+            const letters = [
+                "Every moment with you feels like a beautiful dream...",
+                "Your love is the greatest adventure of my life...",
+                "In you, I've found my home, my heart, my everything...",
+                "I love you more than words can express...",
+                "You are my sunshine, my moonlight, and all my stars...",
+                "I never knew what love was until I met you...",
+                "You are my heart's desire, my soul's fire, my everything...",
+            ];
+            document.getElementById('storyText').textContent = 
+                letters[Math.floor(Math.random() * letters.length)];
+        }
+
+        function initTimeline() {
+            const events = [
+                { date: 'End-August', description: 'Met you for the first time' },
+                { date: 'Early-September', description: 'Attended SIH inaguration with you (We were too hesitant)' },
+                { date: 'Mid-September', description: 'Got rejected from SIH'},
+                { date: 'Late-September', description: 'We started talking to each other' },
+                { date: 'Late-September', description: 'I tried my best to find you in the fresher\'s party' },
+                { date: 'Early-October', description: 'I started observing you (And liking you)' },
+                { date: '2024-10-11', description: 'You shared some personal info and I got involved in your life' },
+                { date: '2024-10-14', description: 'You wished me happy birthday while we were chatting with each other (I realized that I have feelings for you)' },
+                { date: '2024-10-17', description: 'I told you what I feel about you' },
+                { date: '2024-10-18', description: 'You started giving me hints that you like me too' },
+                { date: 'End-October', description: 'We participated in a codethon together and copied our answers from ChatGPT' },
+                { date: 'End-October', description: 'You kinda ordered me to come in ethnic wear in Diwali event'},
+                {date: 'Early-November', description: 'We started to talk more and more on meets and I started to like you more and more'},
+                {date: 'Mid-November', description: 'We started watching movies together and I started to feel that you are the one for me'},
+                {date: '2024-11-17', description: 'You confirmed that you like me too'},
+                {date: '2024-11-18', description: 'We kissed for the first time and stated our relationship'},
+                {date: '2024-11-25', description: 'We started to talk about our future together'},
+                {date: '2024-11-30', description: 'You got sick and your parents weren\'t there so I gave you company and we watched some romantic movies together on meet'}, 
+                {date: '2024-12-01', description: 'You tried to break up with me coz 12th contacted you but I didn\'t let you'},
+                {date: '2024-12-02', description: 'You said "I love you" for the first time while we were on the meet together'},
+                {date: 'Early-November', description: 'We started studing for our end sems together'},
+                {date: 'Mid-November', description: 'We gave our end sems together'},
+                {date: '2024-12-23', description: 'Ayushi invited you to her birthday party and you ate a lot'},
+                {date: '2024-12-25', description: 'You tried to breakup with me again'},
+                {date: '2024-12-30', description: 'You finally broke up with me (I was heartbroken)'},
+
+
+            ];
+
+            const timelineContainer = document.getElementById('timelineEvents');
+            events.forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.classList.add('bg-purple-100', 'p-4', 'rounded-lg', 'shadow-md');
+                eventDiv.innerHTML = `
+                    <strong class="text-purple-800">${event.date}</strong>: ${event.description}
+                `;
+                timelineContainer.appendChild(eventDiv);
+            });
+        }
+
+        function saveJournalEntry() {
+            const title = document.getElementById('entryTitle').value.trim();
+            const mood = document.getElementById('entryMood').value;
+            const content = document.getElementById('thoughtInput').value.trim();
+            const journalEntries = document.getElementById('journalEntries');
+
+            if (title && mood && content) {
+                const entry = {
+                    id: Date.now(),
+                    title: title,
+                    mood: mood,
+                    content: content,
+                    date: new Date().toLocaleString()
+                };
+
+                let entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+                entries.unshift(entry);
+                localStorage.setItem('journalEntries', JSON.stringify(entries));
+
+                const entryDiv = document.createElement('div');
+                entryDiv.classList.add('bg-purple-50', 'p-4', 'rounded-lg', 'shadow-md', 'journal-entry');
+                entryDiv.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-purple-800">${entry.title}</h3>
+                        <span class="text-sm text-gray-600">${entry.date}</span>
+                    </div>
+                    <p class="mb-2 text-gray-700">${entry.content}</p>
+                    <div class="text-right">
+                        <span class="text-sm">Mood: ${getMoodEmoji(entry.mood)}</span>
+                        <button onclick="deleteEntry(${entry.id})" class="ml-2 text-purple-500 text-sm">Delete</button>
+                    </div>
+                `;
+                journalEntries.prepend(entryDiv);
+
+                document.getElementById('entryTitle').value = '';
+                document.getElementById('entryMood').value = '';
+                document.getElementById('thoughtInput').value = '';
+            }
+        }
+
+        function getMoodEmoji(mood) {
+            const moods = {
+                'happy': '😊',
+                'romantic': '💕',
+                'reflective': '🤔',
+                'excited': '🎉'
+            };
+            return moods[mood] || '';
+        }
+
+        function deleteEntry(id) {
+            let entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+            entries = entries.filter(entry => entry.id !== id);
+            localStorage.setItem('journalEntries', JSON.stringify(entries));
+            loadJournalEntries();
+        }
+
+        function loadJournalEntries() {
+            const journalEntries = document.getElementById('journalEntries');
+            journalEntries.innerHTML = '';
+
+            const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+            entries.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.classList.add('bg-purple-50', 'p-4', 'rounded-lg', 'shadow-md', 'journal-entry');
+                entryDiv.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-purple-800">${entry.title}</h3>
+                        <span class="text-sm text-gray-600">${entry.date}</span>
+                    </div>
+                    <p class="mb-2 text-gray-700">${entry.content}</p>
+                    <div class="text-right">
+                        <span class="text-sm">Mood: ${getMoodEmoji(entry.mood)}</span>
+                        <button onclick="deleteEntry(${entry.id})" class="ml-2 text-purple-500 text-sm">Delete</button>
+                    </div>
+                `;
+                journalEntries.appendChild(entryDiv);
+            });
+        }
+
+        generateRandomLoveLetter();
+        initTimeline();
+        loadJournalEntries();
+    </script>
+</body>
+</html>
